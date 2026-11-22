@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e8ebfb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#07081a" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NOCTIS">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌙%3C/text%3E%3C/svg%3E">
+<title>NOCTIS</title>
+<style>
+:root{--bg:#e8ebfb;--pn:rgba(255,255,255,.52);--in:rgba(255,255,255,.45);--gl:rgba(255,255,255,.95);--gl2:rgba(255,255,255,.35);--tx:#14152a;--mut:#5d6080;--bd:rgba(255,255,255,.75);--ac:#6c5ce7;--ac2:#00b8d9;--me:rgba(108,92,231,.2)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#07081a;--pn:rgba(255,255,255,.07);--in:rgba(255,255,255,.07);--gl:rgba(255,255,255,.28);--gl2:rgba(255,255,255,.09);--tx:#eef0ff;--mut:#9a9dc4;--bd:rgba(255,255,255,.15);--ac:#8b7bff;--ac2:#27d8ff;--me:rgba(139,123,255,.3)}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#07081a;--pn:rgba(255,255,255,.07);--in:rgba(255,255,255,.07);--gl:rgba(255,255,255,.28);--gl2:rgba(255,255,255,.09);--tx:#eef0ff;--mut:#9a9dc4;--bd:rgba(255,255,255,.15);--ac:#8b7bff;--ac2:#27d8ff;--me:rgba(139,123,255,.3)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.6 -apple-system,"Hiragino Sans","Noto Sans JP",system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--pn);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px;padding:10px 16px}
+.logo{font-weight:800;letter-spacing:.28em;font-size:18px;background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+nav{display:flex;gap:4px;margin-left:auto}
+button,.btn{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--pn);color:var(--tx);border-radius:999px;padding:6px 14px}
+button:hover{border-color:var(--ac)}
+nav button.on,.pri{background:linear-gradient(90deg,var(--ac),var(--ac2));color:#fff;border-color:transparent}
+main{max-width:760px;margin:0 auto;padding:16px}
+.card{background:var(--pn);border:1px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:12px}
+textarea,input[type=text]{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:10px;resize:vertical;margin-top:6px}
+textarea{min-height:64px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.sp{flex:1}.mut{color:var(--mut);font-size:13px}
+.av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;flex:none;cursor:pointer}
+.av.big{width:72px;height:72px;font-size:28px;cursor:default}
+.ph{display:flex;gap:10px}.pb{flex:1;min-width:0}
+.nm{font-weight:700;cursor:pointer}.tx{white-space:pre-wrap;word-break:break-word}
+.mn{color:var(--ac2);cursor:pointer;font-weight:600}
+.rep{margin:10px 0 0 16px;padding-left:12px;border-left:2px solid var(--bd)}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.tabs button.on{border-color:var(--ac);color:var(--ac)}
+img.att{max-width:100%;max-height:300px;border-radius:12px;margin-top:8px;display:block}
+.file{display:inline-block;margin-top:8px;padding:4px 10px;border:1px solid var(--bd);border-radius:10px;color:var(--ac2);text-decoration:none;font-size:13px}
+.chat{display:grid;grid-template-columns:250px 1fr;gap:12px}
+@media(max-width:700px){.chat{grid-template-columns:1fr}}
+.ri{padding:8px 10px;border-radius:10px;cursor:pointer}.ri:hover,.ri.on{background:var(--me)}
+.msgs{height:50vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px}
+.m{max-width:80%;padding:8px 12px;border-radius:14px;background:var(--bg);border:1px solid var(--bd);align-self:flex-start}
+.m.me{align-self:flex-end;background:var(--me)}
+.stats{display:flex;gap:16px;margin:8px 0}.stats b{font-size:17px}
+label.chk{display:flex;gap:6px;align-items:center;font-size:14px}
+.err{padding:40px 16px;text-align:center;color:var(--mut)}
+
+/* ---- モーション ---- */
+@keyframes up{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.85) translateY(8px)}to{opacity:1;transform:none}}
+@keyframes flow{to{background-position:200% 0}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ac) 45%,transparent)}50%{box-shadow:0 0 0 8px transparent}}
+.card.in,.rep>.in{animation:up .5s cubic-bezier(.2,.8,.2,1) both}
+.m.in{animation:pop .3s cubic-bezier(.2,.9,.3,1.2) both;transform-origin:left bottom}
+.m.me.in{transform-origin:right bottom}
+.logo{background-size:200% 100%;background-image:linear-gradient(90deg,var(--ac),var(--ac2),var(--ac));animation:flow 6s linear infinite}
+button,.btn,.av,.ri,.card,textarea,input[type=text]{transition:transform .18s,box-shadow .18s,border-color .18s,background .18s}
+button:hover,.btn:hover{transform:translateY(-1px)}
+button:active,.btn:active{transform:scale(.94)}
+.pri:hover{box-shadow:0 4px 14px color-mix(in srgb,var(--ac) 45%,transparent)}
+.av:hover{transform:scale(1.1) rotate(-4deg)}.av.big:hover{transform:none}
+.card:hover{border-color:color-mix(in srgb,var(--ac) 40%,var(--bd))}
+.ri:hover{transform:translateX(4px)}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 25%,transparent)}
+.pri[data-a=join]{animation:pulse 2s infinite}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:4px 8px}
+.act span{cursor:pointer;margin-right:10px;font-size:12px}.act span:hover{color:var(--ac)}
+.q{border-left:2px solid var(--ac);padding-left:6px;margin-bottom:2px}
+img.att:not([src]){min-height:80px;min-width:120px;background:var(--bg)}
+
+.poll{margin-top:8px}
+.po{position:relative;border:1px solid var(--bd);border-radius:10px;padding:6px 10px;margin-top:6px;cursor:pointer;overflow:hidden;display:flex;justify-content:space-between;gap:8px}
+.po>span{position:relative}.po.on{border-color:var(--ac);font-weight:700}
+.pbar{position:absolute;left:0;top:0;bottom:0;background:color-mix(in srgb,var(--ac) 25%,transparent);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.row button.on{border-color:var(--ac);color:var(--ac)}
+.emb{margin-top:8px}
+.emb>button{width:100%;aspect-ratio:16/9;max-height:180px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font-size:15px}
+.ytf{width:100%;aspect-ratio:16/9;border:0;border-radius:12px;display:block}
+.scf{aspect-ratio:485/402;max-width:485px}
+
+/* ---- Liquid Glass ---- */
+body{background:radial-gradient(60vmax 50vmax at 10% 0%,color-mix(in srgb,var(--ac) 45%,transparent),transparent 60%),radial-gradient(55vmax 45vmax at 100% 15%,color-mix(in srgb,var(--ac2) 40%,transparent),transparent 60%),radial-gradient(50vmax 40vmax at 50% 110%,rgba(255,95,162,.35),transparent 60%),var(--bg);background-attachment:fixed;min-height:100vh}
+body::before,body::after{content:"";position:fixed;z-index:-1;border-radius:50%;filter:blur(70px);opacity:.5;pointer-events:none}
+body::before{width:42vmax;height:42vmax;left:-10vmax;top:30vh;background:var(--ac);animation:drift 22s ease-in-out infinite alternate}
+body::after{width:36vmax;height:36vmax;right:-8vmax;bottom:-6vmax;background:var(--ac2);animation:drift 28s ease-in-out infinite alternate-reverse}
+@keyframes drift{to{transform:translate(8vmax,-6vmax) scale(1.2)}}
+header{background:var(--pn);backdrop-filter:blur(22px) saturate(1.8);-webkit-backdrop-filter:blur(22px) saturate(1.8);border-bottom:1px solid var(--bd);box-shadow:0 4px 30px rgba(0,0,30,.08)}
+.card{background:linear-gradient(135deg,var(--gl2),transparent 55%),var(--pn);backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);border:1px solid var(--bd);border-radius:22px;box-shadow:0 10px 40px rgba(10,10,50,.14),inset 0 1px 0 var(--gl),inset 0 -1px 0 rgba(255,255,255,.06)}
+button,.btn,select,textarea,input[type=text],.m,.po,.file{background:var(--in);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--bd);box-shadow:inset 0 1px 0 var(--gl)}
+textarea,input[type=text],select{border-radius:14px}
+button,.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 13px;border-radius:999px}
+.pri,nav button.on{background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 88%,#fff),var(--ac2));color:#fff;border-color:rgba(255,255,255,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 6px 18px color-mix(in srgb,var(--ac) 40%,transparent)}
+.m.me,.ri:hover,.ri.on{background:var(--me)}
+.ic{width:1.2em;height:1.2em;flex:none;vertical-align:-.22em}
+.ic.on{fill:#ff4d6d;stroke:#ff4d6d;color:#ff4d6d}
+nav button .ic,#th .ic{width:20px;height:20px}
+#th{margin-left:4px;padding:7px 10px}
+summary{cursor:pointer;list-style:none}summary::-webkit-details-marker{display:none}
+.tabs button{min-width:42px}
+#on{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:.14em;padding:4px 11px;border-radius:999px;background:var(--in);border:1px solid var(--bd);cursor:pointer;box-shadow:inset 0 1px 0 var(--gl);white-space:nowrap}
+#on[hidden]{display:none}
+.dot{width:8px;height:8px;border-radius:50%;background:#2ee66b;box-shadow:0 0 8px #2ee66b;animation:blink 1.8s ease-in-out infinite}
+@keyframes blink{50%{opacity:.35;transform:scale(.8)}}
+#onp{position:absolute;left:12px;top:calc(100% + 8px);min-width:210px;max-height:50vh;overflow:auto;padding:10px;z-index:9}
+#onp .av{width:30px;height:30px;font-size:13px}#onp .row{margin-top:6px}
+@media(max-width:520px){.logo{letter-spacing:.1em}#on{letter-spacing:.06em;padding:4px 8px}}
+button:disabled{opacity:.5;cursor:wait}
+@media(max-width:640px){
+  header{flex-wrap:wrap;gap:8px 10px;padding:8px 12px}
+  #on{order:1}#th{order:2;margin-left:auto}
+  nav{order:3;width:100%;margin:0;justify-content:space-around}
+  nav button{flex:1;max-width:72px}
+  main{padding:12px 10px 28px}
+  .card{padding:12px;border-radius:18px}
+  .rep{margin-left:6px;padding-left:8px}
+  .av{width:36px;height:36px}.av.big{width:64px;height:64px}
+  .msgs{height:55vh}.m{max-width:88%}
+  #onp{left:8px;right:8px}
+}
+
+/* ---- 端末別の最適化 ---- */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{-webkit-tap-highlight-color:transparent;font-size:clamp(14px,.3vw + 13px,17px)}
+header{padding-top:calc(10px + env(safe-area-inset-top,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
+.msgs{height:55vh;height:calc(100dvh - 330px);min-height:260px}
+/* スマホ（縦） */
+@media(max-width:640px){
+  header{padding-top:calc(8px + env(safe-area-inset-top,0px));padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+  main{padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
+  .msgs{height:60vh;height:62dvh}
+}
+/* 小さい端末・折りたたみの外画面 */
+@media(max-width:360px){.logo{font-size:15px;letter-spacing:.08em}nav button{padding:6px 4px}#on{font-size:11px;padding:3px 7px}.av{width:32px;height:32px}}
+/* タブレット */
+@media(min-width:641px) and (max-width:1023px){
+  main{max-width:860px}
+  .chat{grid-template-columns:280px 1fr}
+}
+/* パソコン */
+@media(min-width:1024px){
+  main{max-width:980px}
+  main[data-v=home],main[data-v=prof],main[data-v=users],main[data-v=settings]{max-width:720px}
+  main[data-v=chat]{max-width:1100px}
+  .chat{grid-template-columns:300px 1fr}
+  .msgs{height:calc(100vh - 300px);height:calc(100dvh - 300px);min-height:360px}
+}
+@media(min-width:1600px){body{font-size:17px}main[data-v=chat]{max-width:1280px}}
+/* 横向きスマホ（高さが低い） */
+@media(max-height:480px) and (orientation:landscape){
+  header{position:static}
+  .msgs{height:calc(100vh - 130px);height:calc(100dvh - 130px);min-height:150px}
+}
+/* タッチ端末: 押しやすさ・iOSの自動ズーム防止 */
+@media(pointer:coarse){
+  button,.btn,summary,select{min-height:44px}
+  nav button{min-width:44px}
+  input[type=text],textarea,select{font-size:16px}
+  .act span{padding:8px 6px;font-size:14px}
+  .ri{padding:12px}
+}
+/* マウス無し端末: ホバー演出を無効化 */
+@media(hover:none){button:hover,.btn:hover,.av:hover,.ri:hover,.card:hover{transform:none}}
+/* すりガラス非対応ブラウザ向けの代替 */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .card,header,#onp,button,.btn,select,textarea,input[type=text],.m,.po,.file{background:color-mix(in srgb,var(--bg) 90%,var(--ac))}
+}
+
+/* ---- ページ切り替えのモーション ---- */
+main,main[data-v]{max-width:none!important;margin:0!important;--mw:760px;--p:16px;
+  padding-left:max(var(--p),env(safe-area-inset-left,0px),calc((100% - var(--mw))/2))!important;
+  padding-right:max(var(--p),env(safe-area-inset-right,0px),calc((100% - var(--mw))/2))!important}
+@media(max-width:640px){main,main[data-v]{--p:10px}}
+@media(min-width:641px) and (max-width:1023px){main,main[data-v]{--mw:860px}}
+@media(min-width:1024px){main,main[data-v]{--mw:720px}main[data-v=chat]{--mw:1100px}}
+@media(min-width:1600px){main[data-v=chat]{--mw:1280px}}
+header{view-transition-name:hdr}
+main{view-transition-name:page}
+html{--dx:-1}html[data-dir=back]{--dx:1}
+@keyframes vt-out{to{opacity:0;transform:translateX(calc(var(--dx)*30px)) scale(.985);filter:blur(6px)}}
+@keyframes vt-in{from{opacity:0;transform:translateX(calc(var(--dx)*-30px)) scale(.985);filter:blur(6px)}}
+::view-transition-old(page),::view-transition-new(page){mix-blend-mode:normal}
+::view-transition-old(page){animation:vt-out .24s cubic-bezier(.4,0,.2,1) both}
+::view-transition-new(page){animation:vt-in .4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes pgin{from{opacity:0;transform:translateX(calc(var(--dx)*-26px)) scale(.985)}}
+.pgin{animation:pgin .38s cubic-bezier(.2,.8,.2,1) both}
+@media(prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+</style>
+</head>
+<body>
+<header><span class="logo">NOCTIS</span><span id="on" data-a="onl" hidden></span><nav id="nav"></nav><button id="th" data-a="theme"></button><div id="onp" class="card" hidden></div></header>
+<main id="main"></main>
+<script>
+const $=s=>document.querySelector(s);
+const ICO={home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M17 14.5c2.4.2 4.2 1.8 4.5 5"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c.8-4.2 4-6.5 8-6.5s7.2 2.3 8 6.5"/>',userplus:'<circle cx="10" cy="8" r="4"/><path d="M3 20c.7-3.8 3.4-6 7-6M18 8v6M15 11h6"/>',settings:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',moon:'<path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/>',send:'<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',clip:'<path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.2-8.2"/>',poll:'<path d="M5 20V10M12 20V4M19 20v-7"/>',reply:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v4"/>',trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',heart:'<path d="M12 20s-8-4.9-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 6.1-8 11-8 11z"/>',plus:'<path d="M12 5v14M5 12h14"/>',check:'<path d="M5 12.5l4.5 4.5L19 7"/>',lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',image:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M4 18l5-5 4 4 3-3 4 4"/>',play:'<path d="M7 4l13 8-13 8z"/>',crown:'<path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/>',eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',logout:'<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>'};
+const ic=(n,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[n]}</svg>`;
+const RI={admin:'crown',write:'edit',comment:'chat',view:'eye'},RE={admin:'👑',write:'✏️',comment:'💬',view:'👁'};
+const sysDark=()=>matchMedia('(prefers-color-scheme:dark)').matches;
+function applyTheme(){
+  const t=localStorage.getItem('noctis_theme'),r=document.documentElement;
+  if(t)r.dataset.theme=t;else delete r.dataset.theme;
+  const dark=(t||(sysDark()?'dark':'light'))==='dark',b=$('#th');
+  if(b){b.innerHTML=ic(dark?'sun':'moon');b.title=dark?'ライトモードにする':'ダークモードにする'}
+}
+applyTheme();matchMedia('(prefers-color-scheme:dark)').addEventListener('change',applyTheme);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DEFAULT_URL=''; // ← デプロイ前にFirebaseのURLをここに貼ると、訪れた全員が共有サーバーを使います
+const KEY='noctis_db',UK='noctis_me',RK='noctis_url';
+const A=x=>Array.isArray(x)?x:Object.values(x||{});
+const L=o=>Object.entries(o||{}).map(([id,v])=>({id,...v}));
+let S={users:{},posts:{},rooms:{},msgs:{},votes:{},likes:{}},uid=localStorage.getItem(UK),url=(localStorage.getItem(RK)||DEFAULT_URL).replace(/\/$/,''),last='';
+let view='home',tab='all',pu=null,rid=null,openR=null,editing=false;
+let replyTo=null,mng=false,qs='',tagF='',pollOpen=false,dirty=false;
+const RL={admin:'管理者',write:'書き込み',comment:'コメントのみ',view:'閲覧のみ'};
+const role=(r,u=uid)=>(r.roles&&r.roles[u])||(r.owner===u?'admin':(r.defRole||'write'));
+const sz=b=>b>=1e6?(b/1e6).toFixed(1)+'MB':Math.ceil(b/1e3)+'KB';
+const fc=new Map();
+function loadFile(f){
+  if(!fc.has(f.fid))fc.set(f.fid,(async()=>{
+    let d;
+    if(url){d=(await Promise.all([...Array(+f.n).keys()].map(i=>fetch(`${url}/noctis_files/${f.fid}/${i}.json`).then(r=>r.json())))).join('')}
+    else d=localStorage.getItem('noctis_f_'+f.fid);
+    return URL.createObjectURL(await (await fetch(d)).blob());
+  })());
+  return fc.get(f.fid);
+}
+async function putFile(file,cb){
+  const d=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result);x.readAsDataURL(file)});
+  const fid=Date.now().toString(36)+Math.random().toString(36).slice(2,6),meta={name:file.name,type:file.type,size:file.size,fid};
+  if(url){
+    const C=900000,n=Math.ceil(d.length/C);
+    for(let i=0;i<n;i++){
+      const r=await fetch(`${url}/noctis_files/${fid}/${i}.json`,{method:'PUT',body:JSON.stringify(d.slice(i*C,(i+1)*C))});
+      if(!r.ok)throw 0;cb(Math.round((i+1)/n*100));
+    }
+    meta.n=n;
+  }else{localStorage.setItem('noctis_f_'+fid,d);meta.n=1}
+  return meta;
+}
+function hydrate(){document.querySelectorAll('img[data-fid]:not([src])').forEach(i=>loadFile({fid:i.dataset.fid,n:i.dataset.n}).then(u=>i.src=u).catch(()=>{}))}
+const pend={},drafts={},seen=new Set();
+const nw=id=>seen.has(id)?'':' in';
+const U=u=>S.users[u]||{};
+const nm=u=>U(u).name||'名無し';
+const fol=u=>A(U(u).following);
+const tm=t=>new Date(t).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+const byH=h=>Object.keys(S.users).find(u=>(S.users[u].handle||'').toLowerCase()===h.toLowerCase());
+const rich1=t=>esc(t).replace(/@([A-Za-z0-9_]{2,20})/g,(m,h)=>{const u=byH(h);return u?`<span class="mn" data-a="prof" data-id="${u}">@${h}</span>`:m}).replace(/(?<![&\w])#([\p{L}\p{N}_]{1,30})/gu,(m,g)=>`<span class="mn" data-a="tag" data-id="${g}">#${g}</span>`);
+const rich=t=>String(t??'').split(/(https?:\/\/[^\s<>"']+)/).map((x,k)=>k%2?`<a class="mn" href="${esc(x)}" target="_blank" rel="noopener noreferrer">${esc(x)}</a>`:rich1(x)).join('');
+const YT=/(?:youtube\.com\/(?:watch\?(?:[^\s]*?&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/,SC=/scratch\.mit\.edu\/projects\/(\d+)/;
+const ytm=()=>localStorage.getItem('noctis_yt')||'nocookie';
+const ytBase=()=>ytm()==='edu'?'https://www.youtubeeducation.com':'https://www.youtube-nocookie.com';
+function embeds(t){t=t||'';let h='';const y=t.match(YT),c=t.match(SC);
+  if(y)h+=`<div class="emb"><button data-a="play" data-p="yt" data-id="${y[1]}" title="YouTubeを再生">${ic('play')}</button></div>`;
+  if(c)h+=`<div class="emb"><button data-a="play" data-p="sc" data-id="${c[1]}" title="Scratchプロジェクトを表示">🐱${ic('play')}</button></div>`;return h}
+const lk=id=>{const l=(S.likes||{})[id]||{},n=Object.keys(l).length;return ic('heart',l[uid]?'on':'')+(n?' '+n:'')};
+function pollHtml(p){
+  const v=(S.votes||{})[p.id]||{},vs=Object.values(v),tot=vs.length,me=v[uid];
+  return `<div class="poll">${A(p.poll.opts).map((o,i)=>{const n=vs.filter(x=>x===i).length,pc=tot?Math.round(n/tot*100):0;
+   return `<div class="po ${me===i?'on':''}" data-a="vote" data-id="${p.id}" data-i="${i}"><div class="pbar" style="width:${pc}%"></div><span>${esc(o)}</span><span>${pc}% (${n})</span></div>`}).join('')}<div class="mut">${ic('users')} ${tot}</div></div>`;
+}
+async function scratchInfo(n){
+  try{const c=new AbortController();setTimeout(()=>c.abort(),4000);const r=await fetch('https://api.scratch.mit.edu/users/'+encodeURIComponent(n),{signal:c.signal});if(r.status===404)return{ok:false};if(!r.ok)return{ok:null};
+    const d=await r.json();return{ok:true,name:d.username,icon:`https://uploads.scratch.mit.edu/get_image/user/${d.id}_90x90.png`}}
+  catch(e){return{ok:null}}
+}
+const av=(u,c='')=>`<div class="av ${c}" data-a="prof" data-id="${u}" style="background:${U(u).icon?`center/cover url(${U(u).icon})`:`hsl(${U(u).hue||200},60%,48%)`}">${U(u).icon?'':esc([...nm(u)][0]||'?')}</div>`;
+const fileHtml=f=>!f?'':f.url?(/^image\//.test(f.type)?`<img class="att" src="${esc(f.url)}" alt="${esc(f.name)}">`:`<a class="file" href="${esc(f.url)}" download="${esc(f.name)}">📎 ${esc(f.name)}</a>`)
+  :(/^image\//.test(f.type)&&f.size<=3e6?`<img class="att" data-fid="${f.fid}" data-n="${f.n}" alt="${esc(f.name)}">`
+  :`<a class="file" href="#" data-a="dl" data-id="${f.fid}" data-n="${f.n}" data-name="${esc(f.name)}">📎 ${esc(f.name)} (${sz(f.size)})</a>`);
+
+/* ---- ストレージ: 既定=このブラウザ内 / URL設定時=Firebase Realtime Database ---- */
+function setP(path,val){
+  const ks=path.split('/');let o=S;
+  for(let i=0;i<ks.length-1;i++)o=o[ks[i]]??={};
+  const k=ks[ks.length-1];if(val===null)delete o[k];else o[k]=val;
+  let pr=Promise.resolve(true);
+  if(url){wr++;pr=fetch(`${url}/noctis/${path}.json`,{method:val===null?'DELETE':'PUT',body:JSON.stringify(val)}).then(r=>{if(!r.ok)throw 0;return true}).catch(()=>{fail();return false}).finally(()=>{wr--})}
+  else localStorage.setItem(KEY,JSON.stringify(S));
+  last=JSON.stringify(S);dyn();return pr;
+}
+let wr=0,failed=false;
+function fail(){if(!failed){failed=true;alert('サーバーに保存できませんでした。Firebaseのルール（read / write を true）とデータベースURLを確認してください。')}}
+const push=(p,v)=>{const id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);setP(p+'/'+id,v);return id};
+async function pull(){
+  if(url&&wr>0)return;
+  try{
+    const d=(url?await (await fetch(url+'/noctis.json')).json():JSON.parse(localStorage.getItem(KEY)||'null'))||{};
+    if(url&&d.error){fail();return}
+    const s=JSON.stringify(d);
+    if(s!==last){last=s;S={users:{},posts:{},rooms:{},msgs:{},votes:{},likes:{},...d};dyn(true)}
+  }catch(e){}
+}
+
+/* ---- 画面 ---- */
+function composer(k,ph,btn,nf){
+  return `<textarea id="t_${k}" data-k="${k}" placeholder="${ph}">${esc(drafts[k]||'')}</textarea>${k==='post'&&pollOpen?`<textarea id="t_pl" data-k="pl" placeholder="選択肢を1行に1つずつ（2〜6個）">${esc(drafts.pl||'')}</textarea>`:''}
+  <div class="row">${nf?'':`<label class="btn" title="添付">${ic('clip')}<input type="file" data-k="${k}" hidden></label>`}${k==='post'?`<button data-a="polltog" class="${pollOpen?'on':''}" title="投票">${ic('poll')}</button>`:''}<span class="mut" id="c_${k}">${pend[k]?esc(pend[k].name):''}</span><span class="sp"></span><button class="pri" title="${btn}" data-a="send" data-id="${k}">${ic('send')}</button></div>`;
+}
+function nav(){
+  $('#nav').innerHTML=!U(uid).name?'':[['home','home','ホーム'],['chat','chat','チャット'],['users','users','ユーザー'],['me','user','プロフィール'],['settings','settings','設定']].map(([v,i,t])=>`<button title="${t}" aria-label="${t}" class="${view===v||(v==='me'&&view==='prof')?'on':''}" data-a="${v==='me'?'me':'nav'}" data-id="${v}">${ic(i)}</button>`).join('');
+}
+let lastKey=null,lastView=null;
+const ORD={home:0,chat:1,users:2,prof:3,settings:4};
+function shell(){
+  const key=view+(view==='prof'?pu||'':''),old=lastKey,ov=lastView;lastKey=key;lastView=view;
+  if(old===null||old===key||matchMedia('(prefers-reduced-motion:reduce)').matches){draw();return}
+  document.documentElement.dataset.dir=(ORD[view]??0)>=(ORD[ov]??0)?'fwd':'back';
+  if(document.startViewTransition)document.startViewTransition(draw);
+  else{draw();const m=$('#main');m.classList.remove('pgin');void m.offsetWidth;m.classList.add('pgin')}
+}
+function draw(){
+  nav();const m=$('#main');m.dataset.v=view;
+  if(!U(uid).name){
+    m.innerHTML=`<div class="card"><h2 style="margin-top:0">NOCTIS へようこそ</h2><div class="mut">表示名・@ユーザーID・Scratchのユーザー名を入力してください（Scratch名は存在するか確認します）。</div>
+    <input type="text" id="sn" placeholder="表示名" maxlength="24"><input type="text" id="sh" placeholder="ユーザーID（英数字と_、2〜20文字）例: night_owl" maxlength="20"><input type="text" id="ss" placeholder="🐱 Scratchのユーザー名（必須）" maxlength="20">
+    <div class="row"><button class="pri" data-a="join" title="はじめる">${ic('check')}</button></div></div>`;return;
+  }
+  if(view==='home')m.innerHTML=`<div class="card">${composer('post','いま何してる？ @ユーザーID でメンション','投稿')}</div>
+   <input type="text" id="q" placeholder="🔍 投稿を検索（名前・本文・#タグ）" value="${esc(qs)}"><div class="tabs" style="margin-top:8px">${[['all',ic('globe'),'みんな'],['fol',ic('star'),'フォロー中'],['men','@','自分宛'],...(tab==='tag'?[['tag','#'+tagF,'タグ']]:[])].map(([k,l,t])=>`<button title="${t}" data-a="tab" data-id="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}</div><div id="feed"></div>`;
+  else if(view==='chat')m.innerHTML=`<div class="chat"><div><div class="card"><b>${ic('chat')}</b><div id="rl"></div></div>
+   <div class="card"><details><summary title="新しいルーム">${ic('plus')}${ic('chat')}</summary><input type="text" id="rn" placeholder="ルーム名" maxlength="40">
+   <div class="row"><label class="chk" title="公開"><input type="radio" name="vis" value="pub" checked>${ic('globe')}</label><label class="chk" title="非公開"><input type="radio" name="vis" value="priv">${ic('lock')}</label></div>
+   <input type="text" id="rp" placeholder="非公開の場合の合言葉（4文字以上）">
+   <div class="row"><span class="mut" title="参加者の初期権限">${ic('users')}</span><select id="rd"><option value="write">✏️ 書き込み</option><option value="comment">💬 コメントのみ</option><option value="view">👁 閲覧のみ</option></select></div><div class="row"><button class="pri" data-a="mk" title="作成">${ic('check')}</button></div></details></div>
+   <div class="card"><details><summary title="合言葉で入室">${ic('key')}</summary><input type="text" id="jp" placeholder="合言葉"><div class="row"><button class="pri" data-a="joinroom" title="入室">${ic('check')}</button></div></details></div></div>
+   <div class="card" id="rm"></div></div>`;
+  else if(view==='users')m.innerHTML='<input type="text" id="uq" placeholder="🔍 ユーザーを検索（名前・ID・Scratch名）"><div id="ul" style="margin-top:12px"></div>';
+  else if(view==='settings')m.innerHTML=`<div class="card"><b>保存先</b><p class="mut">現在: ${url?'共有サーバー（Firebase）':'このブラウザ内のみ（自分だけ）'}<br>
+   複数人で使うには、無料の Firebase Realtime Database を作成し、ルールの read / write を true にして、データベースURL（例: https://xxxx-default-rtdb.firebaseio.com）を下に貼ってください。同じURLを設定したHTMLを配れば、全員が同じ場所を共有します。URLを知っている人は誰でも書き込める点に注意してください。</p>
+   <input type="text" id="su" value="${esc(url)}" placeholder="https://xxxx-default-rtdb.firebaseio.com">
+   <div class="row"><button class="pri" data-a="saveurl" title="保存">${ic('check')}</button><button data-a="logout" title="アカウント切替">${ic('logout')}</button></div>
+   <div class="row"><span class="mut" title="YouTube埋め込み">${ic('play')}</span><select id="yt"><option value="nocookie" ${ytm()==='nocookie'?'selected':''}>youtube-nocookie.com</option><option value="edu" ${ytm()==='edu'?'selected':''}>youtubeeducation.com</option></select></div>
+   <div class="row"><button data-a="wipe" title="全データを削除">${ic('trash')}</button></div></div>`;
+  else m.innerHTML='<div id="pf"></div>';
+  dyn();
+}
+function dyn(poll){
+  if(!U(uid).name)return;
+  if(poll&&document.querySelector('.emb.live')){dirty=true;return}
+  if(view==='home')feed();else if(view==='chat')chat();else if(view==='prof')prof();else if(view==='users')users();
+  hydrate();drawOn();
+  for(const k in S.posts)seen.add(k);
+  if(rid)for(const k in (S.msgs[rid]||{}))seen.add(k);
+}
+function postHtml(p,rep){
+  const rs=rep?[]:L(S.posts).filter(r=>r.parent===p.id).sort((a,b)=>a.ts-b.ts);
+  return `<div class="${rep?'':'card'}${nw(p.id)}" style="${rep?'margin-top:10px':''}"><div class="ph">${av(p.uid)}<div class="pb">
+   <div><span class="nm" data-a="prof" data-id="${p.uid}">${esc(nm(p.uid))}</span> <span class="mut">@${esc(U(p.uid).handle||'')} · ${tm(p.ts)}</span></div>
+   <div class="tx">${rich(p.text)}</div>${fileHtml(p.file)}${p.poll?pollHtml(p):''}${embeds(p.text)}
+   <div class="row"><button title="いいね" data-a="like" data-id="${p.id}">${lk(p.id)}</button>${rep?'':`<button title="返信" data-a="reply" data-id="${p.id}">${ic('reply')}${rs.length||''}</button>`}${p.uid===uid?`<button title="削除" data-a="del" data-id="${p.id}">${ic('trash')}</button>`:''}</div>
+   ${rep?'':`<div class="rep" style="${rs.length||openR===p.id?'':'display:none'}">${rs.map(r=>postHtml(r,1)).join('')}${openR===p.id?`<div style="margin-top:8px">${composer('r'+p.id,'返信を書く','返信')}</div>`:''}</div>`}
+  </div></div></div>`;
+}
+function feed(){
+  const el=$('#feed');if(!el)return;
+  let l=L(S.posts).filter(p=>!p.parent);
+  if(tab==='fol')l=l.filter(p=>p.uid===uid||fol(uid).includes(p.uid));
+  if(tab==='men'){const h=(U(uid).handle||'').toLowerCase();l=L(S.posts).filter(p=>p.uid!==uid&&(p.text||'').toLowerCase().match(new RegExp('@'+h+'(?![a-z0-9_])')))}
+  if(tab==='tag')l=l.filter(p=>(p.text||'').toLowerCase().includes('#'+tagF.toLowerCase()));
+  if(qs){const q=qs.toLowerCase();l=l.filter(p=>((p.text||'')+nm(p.uid)+(U(p.uid).handle||'')).toLowerCase().includes(q))}
+  l.sort((a,b)=>b.ts-a.ts);
+  el.innerHTML=l.map(p=>postHtml(p)).join('')||'<div class="err">まだ何もありません</div>';
+}
+const canSee=r=>r.vis==='pub'||A(r.members).includes(uid);
+const myRooms=()=>L(S.rooms).filter(canSee).sort((a,b)=>b.ts-a.ts);
+function chat(){
+  const rl=$('#rl');if(!rl)return;
+  rl.innerHTML=myRooms().map(r=>`<div class="ri ${r.id===rid?'on':''}" data-a="room" data-id="${r.id}">${ic(r.vis==='pub'?'globe':'lock')} ${esc(r.name)} <span class="mut">${r.vis==='pub'?'':A(r.members).length+' '+ic('users')}</span></div>`).join('')||'<div class="mut">ルームがありません</div>';
+  const rm=$('#rm'),r=S.rooms[rid];
+  if(!r||!canSee(r)){rm.innerHTML='<div class="mut">ルームを選ぶか作成してください</div>';rm.dataset.r='';return}
+  const my=role(r),w=my==='admin'||my==='write',cm=my==='comment',sig=rid+my;
+  if(!$('#msgs')||rm.dataset.r!==sig){
+    rm.dataset.r=sig;replyTo=null;mng=false;
+    rm.innerHTML=`<b>${ic(r.vis==='pub'?'globe':'lock')} ${esc(r.name)}</b> <span class="mut">${r.vis==='pub'?'':A(r.members).map(nm).map(esc).join('、')} <span title="あなたの権限: ${RL[my]}">${ic(RI[my])}</span></span> ${my==='admin'?`<button data-a="mng" title="管理">${ic('shield')}</button>`:''}<div id="mg"></div><div class="msgs" id="msgs"></div><div id="cp"></div>`;cp();
+  }
+  const opts=v=>Object.keys(RL).map(k=>`<option value="${k}" ${v===k?'selected':''}>${RE[k]} ${RL[k]}</option>`).join('');
+  const us=r.vis==='pub'?Object.keys(S.users):A(r.members);
+  $('#mg').innerHTML=mng&&my==='admin'?`<div class="card" style="margin-top:8px"><b>${ic('shield')}</b>${us.map(u=>`<div class="row"><span>${esc(nm(u))} <span class="mut">@${esc(U(u).handle)}</span></span><span class="sp"></span>${u===r.owner?`<span title="作成者">${ic('crown')}</span>`:`<select data-role="${u}">${opts(role(r,u))}</select>`}</div>`).join('')}
+   <div class="row"><span class="mut" title="新規参加者の初期権限">${ic('users')}${ic('plus')}</span><span class="sp"></span><select data-def>${opts(r.defRole||'write')}</select></div>
+   <div class="row"><button data-a="delroom" title="このルームを削除">${ic('trash')}</button></div></div>`:'';
+  const box=$('#msgs'),bot=box.scrollTop+box.clientHeight>=box.scrollHeight-40,M=S.msgs[rid]||{};
+  box.innerHTML=L(M).sort((a,b)=>a.ts-b.ts).map(m=>{const q=m.parent&&M[m.parent];
+    return `<div class="m ${m.uid===uid?'me':''}${nw(m.id)}"><div class="mut">${m.uid===uid?'':esc(nm(m.uid))+' · '}${tm(m.ts)}</div>${q?`<div class="mut q">↩ ${esc(nm(q.uid))}: ${esc((q.text||'📎').slice(0,40))}</div>`:''}<div class="tx">${rich(m.text)}</div>${fileHtml(m.file)}${embeds(m.text)}
+    <div class="mut act">${w||cm?`<span title="返信" data-a="mrep" data-id="${m.id}">${ic('reply')}</span>`:''}${my==='admin'||m.uid===uid?`<span title="削除" data-a="mdel" data-id="${m.id}">${ic('trash')}</span>`:''}</div></div>`}).join('');
+  if(bot)box.scrollTop=box.scrollHeight;
+}
+function cp(){
+  const r=S.rooms[rid],el=$('#cp');if(!r||!el)return;const my=role(r),q=replyTo&&(S.msgs[rid]||{})[replyTo];
+  el.innerHTML=my==='view'?`<div class="mut" style="margin-top:8px" title="閲覧のみ">${ic('eye')}</div>`
+   :(my==='comment'&&!q)?`<div class="mut" style="margin-top:8px" title="コメントのみ: メッセージの返信アイコンから返信できます">${ic('chat')} ${ic('reply')}</div>`
+   :(q?`<div class="mut" style="margin-top:8px">${ic('reply')} ${esc(nm(q.uid))} <button data-a="cancelrep" title="キャンセル">${ic('x')}</button></div>`:'')+composer('msg',my==='comment'?'コメントを書く':'メッセージ','送信',my==='comment');
+}
+function users(){
+  const el=$('#ul');if(!el)return;const q=($('#uq').value||'').toLowerCase();
+  el.innerHTML=Object.keys(S.users).filter(u=>(nm(u)+(U(u).handle||'')+(U(u).scratch||'')).toLowerCase().includes(q)).map(u=>{const f=fol(uid).includes(u);
+   return `<div class="card"><div class="ph">${av(u)}<div class="pb"><span class="nm" data-a="prof" data-id="${u}">${esc(nm(u))}</span> <span class="mut">@${esc(U(u).handle)}${U(u).scratch?' · 🐱 '+esc(U(u).scratch):''}</span><div class="mut">${esc((U(u).bio||'').slice(0,60))}</div></div>${u===uid?'':`<button data-a="follow" data-id="${u}" class="${f?'':'pri'}" title="${f?'フォロー中':'フォロー'}">${ic(f?'check':'plus')}</button>`}</div></div>`}).join('')||'<div class="err">見つかりません</div>';
+}
+function prof(){
+  const el=$('#pf');if(!el)return;const u=pu||uid,p=U(u);if(!p.name){el.innerHTML='<div class="err">ユーザーが見つかりません</div>';return}
+  const me=u===uid,fers=Object.keys(S.users).filter(x=>fol(x).includes(u)).length,isF=fol(uid).includes(u);
+  const mine=L(S.posts).filter(x=>x.uid===u&&!x.parent).sort((a,b)=>b.ts-a.ts);
+  el.innerHTML=`<div class="card"><div class="ph">${av(u,'big')}<div class="pb">
+   ${me&&editing?`<label class="btn" title="アイコンを選ぶ">${ic('image')}<input type="file" accept="image/*" data-icon hidden></label> ${p.icon?`<button data-a="rmicon" title="アイコンを削除">${ic('trash')}</button>`:''}${p.scratch?'<button data-a="scicon" title="Scratchのアイコンを使う">🐱</button>':''}<input type="text" id="en" value="${esc(p.name)}" maxlength="24"><textarea id="eb" placeholder="自己紹介">${esc(p.bio||'')}</textarea><div class="row"><button class="pri" data-a="save" title="保存">${ic('check')}</button><button data-a="edit" title="キャンセル">${ic('x')}</button></div>`
+   :`<div style="font-size:20px;font-weight:800">${esc(p.name)}</div><div class="mut">@${esc(p.handle)}${p.scratch?` · 🐱 <a class="mn" href="https://scratch.mit.edu/users/${encodeURIComponent(p.scratch)}/" target="_blank" rel="noopener noreferrer">${esc(p.scratch)}</a>`:''}</div><div class="tx">${rich(p.bio||'')||'<span class="mut">自己紹介はまだありません</span>'}</div>
+   <div class="stats"><span title="フォロー"><b>${fol(u).length}</b> ${ic('userplus')}</span><span title="フォロワー"><b>${fers}</b> ${ic('users')}</span><span title="投稿"><b>${mine.length}</b> ${ic('chat')}</span></div>
+   ${me?`<button data-a="edit" title="プロフィール編集">${ic('edit')}</button>`:`<button class="${isF?'':'pri'}" data-a="follow" data-id="${u}" title="${isF?'フォロー中':'フォロー'}">${ic(isF?'check':'plus')}</button>`}`}
+  </div></div></div>`+mine.map(x=>postHtml(x)).join('');
+}
+
+/* ---- 操作 ---- */
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,id=b.dataset.id;
+  if(a==='theme'){localStorage.setItem('noctis_theme',(localStorage.getItem('noctis_theme')||(sysDark()?'dark':'light'))==='dark'?'light':'dark');applyTheme()}
+  else if(a==='onl'){const pp=$('#onp');pp.hidden=!pp.hidden;drawOn()}
+  else if(a==='nav'){view=id;shell()}
+  else if(a==='me'){view='prof';pu=uid;editing=false;shell()}
+  else if(a==='prof'){$('#onp').hidden=true;view='prof';pu=id;editing=false;shell()}
+  else if(a==='tab'){tab=id;shell()}
+  else if(a==='reply'){openR=openR===id?null:id;feed()}
+  else if(a==='del'){if(confirm('削除しますか？')){setP('posts/'+id,null);setP('votes/'+id,null);setP('likes/'+id,null)}}
+  else if(a==='follow'){const f=fol(uid);setP('users/'+uid+'/following',f.includes(id)?f.filter(x=>x!==id):[...f,id])}
+  else if(a==='edit'){editing=!editing;prof()}
+  else if(a==='save'){setP('users/'+uid+'/name',$('#en').value.trim()||'名無し');setP('users/'+uid+'/bio',$('#eb').value.trim());editing=false;prof()}
+  else if(a==='send')send(id);
+  else if(a==='room'){rid=id;shell()}
+  else if(a==='mk'){
+    const n=$('#rn').value.trim();if(!n)return;
+    const v=document.querySelector('input[name=vis]:checked').value;let hash='';
+    if(v==='priv'){const w=$('#rp').value.trim();if(w.length<4)return alert('合言葉は4文字以上にしてください');hash=await hs(w);if(L(S.rooms).some(r=>r.hash===hash))return alert('その合言葉は使えません。別の合言葉にしてください')}
+    rid=push('rooms',{name:n,vis:v,hash,members:[uid],owner:uid,defRole:$('#rd').value,roles:{[uid]:'admin'},ts:Date.now()});mng=false;shell();
+  }
+  else if(a==='joinroom'){
+    const h=await hs($('#jp').value.trim()),r=L(S.rooms).find(r=>r.hash&&r.hash===h);
+    if(!r)return alert('合言葉が違います');
+    if(!A(r.members).includes(uid))setP('rooms/'+r.id+'/members',[...A(r.members),uid]);
+    rid=r.id;shell();
+  }
+  else if(a==='mng'){mng=!mng;chat()}
+  else if(a==='mrep'){replyTo=id;cp();const t=document.getElementById('t_msg');if(t)t.focus()}
+  else if(a==='cancelrep'){replyTo=null;cp()}
+  else if(a==='mdel'){if(confirm('このメッセージを削除しますか？'))setP(`msgs/${rid}/${id}`,null)}
+  else if(a==='delroom'){if(confirm('ルームとメッセージをすべて削除しますか？')){const d=rid;rid=null;setP('rooms/'+d,null);setP('msgs/'+d,null);shell()}}
+  else if(a==='dl'){e.preventDefault();const u=await loadFile({fid:id,n:b.dataset.n}),x=document.createElement('a');x.href=u;x.download=b.dataset.name;x.click()}
+  else if(a==='rmicon'){setP('users/'+uid+'/icon',null);prof()}
+  else if(a==='join'){
+    const n=$('#sn').value.trim(),h=$('#sh').value.trim().replace(/^@/,''),sc=$('#ss').value.trim();
+    if(!n)return alert('表示名を入力してください');
+    if(!/^[A-Za-z0-9_]{2,20}$/.test(h))return alert('ユーザーIDは英数字と_で2〜20文字にしてください');
+    if(byH(h))return alert('そのユーザーIDは使われています');
+    if(!/^[A-Za-z0-9_-]{3,20}$/.test(sc))return alert('Scratchのユーザー名を入力してください（英数字・-・_、3〜20文字）');
+    b.disabled=true;const si=await scratchInfo(sc);b.disabled=false;
+    if(si.ok===false)return alert('そのScratchユーザー名は見つかりませんでした');
+    const scn=si.name||sc;
+    if(Object.values(S.users).some(x=>(x.scratch||'').toLowerCase()===scn.toLowerCase()))return alert('そのScratchユーザー名はすでに登録されています');
+    uid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem(UK,uid);
+    const u={name:n,handle:h,scratch:scn,bio:'',hue:Math.floor(Math.random()*360),ts:Date.now()};if(si.icon)u.icon=si.icon;
+    b.disabled=true;const ok=await setP('users/'+uid,u);b.disabled=false;
+    if(!ok){delete S.users[uid];localStorage.removeItem(UK);uid=null;return}
+    view='home';shell();beat();
+  }
+  else if(a==='scicon'){const si=await scratchInfo(U(uid).scratch);if(si.icon){setP('users/'+uid+'/icon',si.icon);prof()}else alert('Scratchのアイコンを取得できませんでした')}
+  else if(a==='polltog'){pollOpen=!pollOpen;shell()}
+  else if(a==='vote'){const cur=((S.votes||{})[id]||{})[uid],i=+b.dataset.i;setP(`votes/${id}/${uid}`,cur===i?null:i)}
+  else if(a==='like'){const cur=((S.likes||{})[id]||{})[uid];setP(`likes/${id}/${uid}`,cur?null:1)}
+  else if(a==='tag'){tab='tag';tagF=id;view='home';shell()}
+  else if(a==='play'){
+    const box=b.closest('.emb'),yt=b.dataset.p==='yt';box.dataset.html=box.innerHTML;box.classList.add('live');
+    box.innerHTML=`<iframe class="ytf ${yt?'':'scf'}" src="${yt?ytBase()+'/embed/'+id+'?rel=0':'https://scratch.mit.edu/projects/'+id+'/embed'}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe><div class="row"><button data-a="stopv" title="閉じる">${ic('x')}</button>${yt?`<a class="mn" href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener noreferrer" title="YouTubeで開く">${ic('globe')}</a>`:''}</div>`;
+  }
+  else if(a==='stopv'){const box=b.closest('.emb');box.innerHTML=box.dataset.html;box.classList.remove('live');if(dirty){dirty=false;dyn()}}
+  else if(a==='saveurl'){localStorage.setItem(RK,$('#su').value.trim());location.reload()}
+  else if(a==='wipe'){
+    if(prompt('保存先のすべてのデータ（ユーザー・投稿・ルーム・添付）を完全に削除します。元に戻せません。\n続けるには「削除」と入力してください')!=='削除')return;
+    try{
+      if(url)for(const n of['noctis','noctis_files','noctis_presence']){const r=await fetch(`${url}/${n}.json`,{method:'DELETE'});if(!r.ok)throw 0}
+      Object.keys(localStorage).filter(k=>k.startsWith('noctis_')&&k!==RK).forEach(k=>localStorage.removeItem(k));
+      alert('削除しました');location.reload();
+    }catch(x){alert('削除に失敗しました。Firebaseのルールや接続を確認してください')}
+  }
+  else if(a==='logout'){localStorage.removeItem(UK);location.reload()}
+});
+document.addEventListener('keydown',e=>{
+  const t=e.target,k=t.dataset&&t.dataset.k;
+  if(!k||k==='pl'||t.tagName!=='TEXTAREA'||e.key!=='Enter'||e.shiftKey||e.isComposing||e.keyCode===229)return;
+  if(matchMedia('(hover:hover) and (pointer:fine)').matches){e.preventDefault();send(k)}
+});
+document.addEventListener('input',e=>{if(e.target.id==='q'){qs=e.target.value;feed()}if(e.target.id==='uq')users();const k=e.target.dataset&&e.target.dataset.k;if(k&&e.target.tagName==='TEXTAREA')drafts[k]=e.target.value});
+document.addEventListener('change',async e=>{
+  const t=e.target;if(t.id==='yt'){localStorage.setItem('noctis_yt',t.value);return}if(t.dataset.role){setP(`rooms/${rid}/roles/${t.dataset.role}`,t.value);return}if(t.dataset.def!==undefined){setP(`rooms/${rid}/defRole`,t.value);return}if(t.type!=='file'||!t.files[0])return;if(t.dataset.icon!==undefined){icon(t.files[0]);t.value='';return}const k=t.dataset.k,f=t.files[0],c=document.getElementById('c_'+k);
+  const MAX=url?25e6:3e6;
+  if(f.size>MAX){c.textContent='大きすぎます（'+sz(MAX)+'まで）';t.value='';return}
+  pend[k]={busy:1};c.textContent='アップロード中…';t.value='';
+  try{pend[k]=await putFile(f,p=>c.textContent='アップロード中 '+p+'%');c.textContent='📎 '+f.name}catch(x){delete pend[k];c.textContent='アップロードに失敗しました（容量や接続を確認）'}
+});
+async function hs(s){
+  try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('noctis:'+s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+  catch(e){let h=5381;for(const c of 'noctis:'+s)h=(h*33^c.charCodeAt(0))>>>0;return'f'+h}
+}
+function icon(f){
+  const r=new FileReader(),i=new Image();
+  r.onload=()=>{i.onload=()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),m=Math.min(i.width,i.height);
+    x.drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,128,128);setP('users/'+uid+'/icon',c.toDataURL('image/jpeg',.8));prof()};i.src=r.result};
+  r.readAsDataURL(f);
+}
+function send(k){
+  const ta=document.getElementById('t_'+k),text=ta.value.trim(),f=pend[k];if(f&&f.busy)return alert('アップロード中です');if(!text&&!f)return;
+  const d={uid,text,ts:Date.now()};if(f)d.file=f;
+  if(k==='post'){d.parent='';
+    if(pollOpen){const o=(drafts.pl||'').split('\n').map(x=>x.trim()).filter(Boolean).slice(0,6);if(o.length<2)return alert('選択肢は2つ以上入力してください');if(!text)return alert('質問文を入力してください');d.poll={opts:o};pollOpen=false;delete drafts.pl}
+    push('posts',d);if(view==='home')setTimeout(shell,0)}
+  else if(k==='msg'){const r=S.rooms[rid];if(!r)return;const my=role(r);if(my==='view')return;if(my==='comment'){if(!replyTo)return alert('コメントのみの権限です。メッセージの「↩ 返信」から返信してください');delete d.file}if(replyTo)d.parent=replyTo;push('msgs/'+rid,d);replyTo=null;setTimeout(cp,0)}
+  else{d.parent=k.slice(1);push('posts',d)}
+  ta.value='';delete drafts[k];delete pend[k];const c=document.getElementById('c_'+k);if(c)c.textContent='';
+}
+/* ---- オンライン表示（ハートビート） ---- */
+let PR={};
+const onl=()=>Object.keys(PR).filter(u=>Date.now()-PR[u]<45000&&U(u).name);
+async function readPr(){
+  try{PR=(url?await (await fetch(url+'/noctis_presence.json')).json():JSON.parse(localStorage.getItem('noctis_pr')||'{}'))||{}}catch(e){}
+  drawOn();
+}
+async function beat(){
+  if(!U(uid).name||document.hidden)return;
+  try{
+    if(url)await fetch(`${url}/noctis_presence/${uid}.json`,{method:'PUT',body:String(Date.now())});
+    else{const d=JSON.parse(localStorage.getItem('noctis_pr')||'{}');d[uid]=Date.now();localStorage.setItem('noctis_pr',JSON.stringify(d))}
+  }catch(e){}
+  readPr();
+}
+function drawOn(){
+  const b=$('#on');if(!b)return;
+  if(!U(uid).name){b.hidden=true;return}
+  const l=onl();b.hidden=false;b.innerHTML=`<i class="dot"></i>ONLINE ${l.length}`;b.title=l.map(nm).join(', ');
+  const pp=$('#onp');
+  if(!pp.hidden)pp.innerHTML=l.map(u=>`<div class="row">${av(u)}<span class="nm" data-a="prof" data-id="${u}">${esc(nm(u))}</span><span class="mut">@${esc(U(u).handle||'')}</span></div>`).join('')||'<span class="mut">-</span>';
+}
+document.addEventListener('click',e=>{if(!e.target.closest('#on,#onp'))$('#onp').hidden=true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)beat()});
+addEventListener('pagehide',()=>{
+  if(!U(uid).name)return;
+  if(url)fetch(`${url}/noctis_presence/${uid}.json`,{method:'DELETE',keepalive:true});
+  else{try{const d=JSON.parse(localStorage.getItem('noctis_pr')||'{}');delete d[uid];localStorage.setItem('noctis_pr',JSON.stringify(d))}catch(e){}}
+});
+pull().then(()=>{shell();setInterval(pull,url?3000:1500);beat();setInterval(beat,15000);setInterval(readPr,5000)});
+addEventListener('storage',pull);
+</script>
+</body>
+</html>
